@@ -10,6 +10,7 @@
   "author": "Prabhjot Singh Saini",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "express": "^4.22.1",
