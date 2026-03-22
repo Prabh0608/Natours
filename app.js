@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -12,6 +13,9 @@ const userRouter = require('./Routes/userRoutes');
 const reviewRouter = require('./Routes/reviewRoutes');
 
 const app = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 // 1. MIDDLEWARE
 app.use(helmet());
@@ -49,6 +53,9 @@ app.use(
 app.use(express.static(`${__dirname}/public`));
 
 // 3. Routes
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

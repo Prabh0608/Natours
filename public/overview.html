@@ -1,13 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link
-      href="https://fonts.googleapis.com/css?family=Lato:300,300i,700"
-      rel="stylesheet"
-    />
 
     <link rel="stylesheet" href="css/style.css" />
     <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
@@ -46,8 +41,51 @@
       </nav>
     </header>
 
+    <section class="hero">
+      <p class="hero__tagline">✦ Curated Adventures</p>
+      <h1 class="hero__title">Where Will You <em>Wander</em> Next?</h1>
+      <p class="hero__sub">
+        Handcrafted tours for the curious soul — from forest trails to snow
+        peaks, we take you there.
+      </p>
+      <div class="filters">
+        <button class="filter-pill active">All</button>
+        <button class="filter-pill">Easy</button>
+        <button class="filter-pill">Medium</button>
+        <button class="filter-pill">Difficult</button>
+        <button class="filter-pill">Nature</button>
+        <button class="filter-pill">Adventure</button>
+      </div>
+    </section>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat__num">6+</div>
+        <div class="stat__label">Unique Tours</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">4.8★</div>
+        <div class="stat__label">Avg Rating</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">100+</div>
+        <div class="stat__label">Happy Travelers</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">8</div>
+        <div class="stat__label">Countries</div>
+      </div>
+    </div>
+
     <!-- In video, this <main> element is wrongly called: <section class="overview">. So in pug template, please use main.main instead of section.overview -->
     <main class="main">
+      <div class="section-heading">
+        <p class="section-heading__eyebrow">Our Experiences</p>
+        <h2 class="section-heading__title">
+          Find Your <em>Perfect</em> Adventure
+        </h2>
+      </div>
+
       <div class="card-container">
         <div class="card">
           <div class="card__header">
@@ -427,5 +465,16 @@
         &copy; by Jonas Schmedtmann. All rights reserved.
       </p>
     </div>
+
+    <script>
+      document.querySelectorAll('.filter-pill').forEach((pill) => {
+        pill.addEventListener('click', function () {
+          document
+            .querySelectorAll('.filter-pill')
+            .forEach((p) => p.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    </script>
   </body>
 </html>
