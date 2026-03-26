@@ -122,6 +122,11 @@ tourSchema.virtual('reviews', {
   localField: '_id',
 });
 
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next;
+});
+
 // Agregation middleWare
 
 tourSchema.pre(/^find/, function (next) {
