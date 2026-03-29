@@ -90,6 +90,26 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_PRIVACY_KEY,
+    );
+
+    const freshUser = await User.findById(decoded.id);
+    if (!freshUser) {
+      return next();
+    }
+    if (freshUser.changePasswordAfter(decoded.iat)) {
+      return next();
+    }
+    res.locals.user = freshUser;
+    return next();
+  }
+  next();
+});
+
 exports.restrict = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
