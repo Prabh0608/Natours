@@ -14,15 +14,15 @@ const signToken = (id) => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-  // const cookieOptions = {
-  //   expiresIn: new Date(
-  //     Date.now() + process.env.JWT_COOKIE_EXPIRY_TIME * 24 * 60 * 60 * 1000,
-  //   ),
-  //   httpOnly: true,
-  // };
-  // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-  // res.cookie('jwt', token, cookieOptions);
-  // user.password = undefined;
+  const cookieOptions = {
+    expiresIn: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRY_TIME * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
+  user.password = undefined;
 
   res.status(statusCode).json({
     status: 'Success',
@@ -47,7 +47,6 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.correctPassword(password, user.password)))
     return next(new AppError('Incorrect email or password', 401));
-
   createSendToken(user, 201, res);
 });
 
@@ -58,6 +57,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(
