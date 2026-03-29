@@ -1589,61 +1589,163 @@ body {
 }
 
 /* ────────────────────────────────────────────────────────────
-   FORMS / AUTH
+   LOGIN PAGE
 ──────────────────────────────────────────────────────────── */
-.login-form {
-  margin: 0 auto;
-  max-width: 55rem;
-  background-color: var(--white);
-  box-shadow: 0 2.5rem 8rem 2rem rgba(0, 0, 0, 0.06);
-  padding: 5rem 7rem;
-  border-radius: 1.6rem;
+
+/* The .main on login page is the dark body — centre the card */
+.main:has(.login-form) {
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 7.2rem);
+  padding: 6rem 3rem;
+  position: relative;
+  overflow: hidden;
 }
+/* Ambient radial glow behind the card */
+.main:has(.login-form)::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70rem;
+  height: 50rem;
+  background: radial-gradient(
+    ellipse,
+    rgba(85, 199, 122, 0.1) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.login-form {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 50rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(125, 213, 111, 0.18);
+  border-radius: 2.4rem;
+  padding: 5.5rem 5.5rem 5rem;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 3rem 7rem rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(125, 213, 111, 0.08);
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+
+/* Brand mark at the top of the login card */
+.login-form::before {
+  content: '';
+  display: block;
+  width: 5.5rem;
+  height: 5.5rem;
+  background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+  border-radius: 50%;
+  margin: 0 auto 3rem;
+  box-shadow:
+    0 0 0 8px rgba(125, 213, 111, 0.12),
+    0 1rem 3rem rgba(40, 180, 135, 0.3);
+}
+
+.login-form .heading-secondary {
+  text-align: center;
+  display: block;
+  font-size: 2.6rem;
+}
+
+/* ── Form inputs (shared: login + account) ───────────────── */
+.form__group {
+  position: relative;
+}
+.form__group:not(:last-child) {
+  margin-bottom: 2.8rem;
+}
+
+.form__label {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.9rem;
+  transition: color 0.2s;
+}
+.form__group:focus-within .form__label {
+  color: var(--green-mid);
+}
+
 .form__input {
   display: block;
   font-family: inherit;
-  font-size: 1.5rem;
-  color: inherit;
-  padding: 1.25rem 1.75rem;
-  border: none;
+  font-size: 1.55rem;
+  font-weight: 400;
+  color: var(--ink);
   width: 100%;
-  background-color: var(--mist);
-  border-top: 3px solid transparent;
-  border-bottom: 3px solid transparent;
-  transition: all 0.3s;
-  border-radius: 8px;
+  padding: 1.4rem 1.8rem;
+  background: var(--white);
+  border: 1.5px solid var(--fog);
+  border-radius: 1.2rem;
+  outline: none;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s;
   box-sizing: border-box;
 }
-.form__input:focus {
-  outline: none;
-  border-bottom: 3px solid var(--green-mid);
+/* Login page — inputs on dark background */
+.login-form .form__input {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--white);
 }
-.form__input:focus:invalid {
-  border-bottom: 3px solid #ff7730;
+.login-form .form__input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
 }
-.form__input::placeholder {
+.login-form .form__input:focus {
+  border-color: var(--green-mid);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 0 4px rgba(85, 199, 122, 0.12);
+}
+/* Account page — inputs on white background */
+.form-user-data .form__input,
+.form-user-settings .form__input {
+  background: var(--mist);
+  border-color: var(--fog);
+  color: var(--ink);
+}
+.form-user-data .form__input::placeholder,
+.form-user-settings .form__input::placeholder {
   color: #bbb;
 }
-.form__group:not(:last-child) {
-  margin-bottom: 2.5rem;
+.form-user-data .form__input:focus,
+.form-user-settings .form__input:focus {
+  border-color: var(--green-mid);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(85, 199, 122, 0.1);
 }
-.form__label {
-  display: block;
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
+.form__input:focus:invalid {
+  border-color: #e05a3a;
+  box-shadow: 0 0 0 4px rgba(224, 90, 58, 0.1);
 }
+
+/* Photo upload row */
 .form__photo-upload {
   display: flex;
   align-items: center;
-  font-size: 1.6rem;
+  gap: 2rem;
+  padding: 1.5rem 0;
 }
 .form__user-photo {
-  height: 7.5rem;
-  width: 7.5rem;
+  height: 6.5rem;
+  width: 6.5rem;
   border-radius: 50%;
-  margin-right: 2rem;
+  object-fit: cover;
   border: 3px solid var(--green-light);
+  box-shadow: 0 0 0 5px rgba(125, 213, 111, 0.15);
+  flex-shrink: 0;
 }
 .form__upload {
   width: 0.1px;
@@ -1653,104 +1755,304 @@ body {
   position: absolute;
   z-index: -1;
 }
+.form__upload + label,
+.btn-text,
+.btn-text:link,
+.btn-text:visited {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--green-mid);
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  padding-bottom: 2px;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+  background: none;
+}
+.form__upload + label:hover,
+.btn-text:hover {
+  color: var(--green-dark);
+  border-bottom-color: var(--green-dark);
+}
 .form__upload:focus + label {
   outline: 3px solid var(--green-mid);
   outline-offset: 3px;
+  border-radius: 3px;
 }
-.form__upload + label {
-  color: var(--green-mid);
-  display: inline-block;
-  text-decoration: none;
-  border-bottom: 1px solid var(--green-mid);
-  padding: 3px;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-.form__upload + label:hover {
-  background-color: var(--green-mid);
-  color: #fff;
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+
+/* Divider line */
+.line {
+  margin: 4rem 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--fog) 20%,
+    var(--fog) 80%,
+    transparent
+  );
 }
 
 /* ────────────────────────────────────────────────────────────
    ERROR PAGE
 ──────────────────────────────────────────────────────────── */
-.error {
+.main:has(.error) {
+  background: var(--ink);
+  min-height: calc(100vh - 7.2rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.main:has(.error)::before {
+  content: '';
   position: absolute;
-  top: 35%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 80rem;
+  width: 60rem;
+  height: 40rem;
+  background: radial-gradient(
+    ellipse,
+    rgba(224, 90, 58, 0.08) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.error {
   text-align: center;
+  animation: fadeUp 0.6s ease both;
+  padding: 4rem;
 }
 .error__title {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+/* Style the error heading to be large and white on the dark bg */
+.error__title .heading-secondary--error {
+  font-size: 3rem;
+  background-image: linear-gradient(to right, #ff7730, #eb4d4b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .error__emoji {
-  font-size: 3.75rem;
-  margin-left: 1rem;
+  font-size: 4.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 }
 .error__msg {
-  font-size: 2.5rem;
-  font-weight: 700;
-  max-width: 50rem;
-  margin: 0 auto;
+  font-size: 2rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.04em;
+  margin-top: 0.5rem;
 }
 
 /* ────────────────────────────────────────────────────────────
-   SIDE NAV (user dashboard)
+   ACCOUNT PAGE — user-view layout
 ──────────────────────────────────────────────────────────── */
+.main:has(.user-view) {
+  background: var(--mist);
+  padding: 0;
+  min-height: calc(100vh - 7.2rem);
+}
+/* Dot grid texture */
+.main:has(.user-view)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(40, 180, 135, 0.04) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.user-view {
+  display: grid;
+  grid-template-columns: 28rem 1fr;
+  min-height: inherit;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.user-view__menu {
+  background: var(--ink);
+  padding: 4rem 0 4rem;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(125, 213, 111, 0.1);
+  position: sticky;
+  top: 7.2rem;
+  height: calc(100vh - 7.2rem);
+  overflow-y: auto;
+}
+
+/* ── Side nav ────────────────────────────────────────────── */
 .side-nav {
   list-style: none;
+  padding: 0 0 2rem;
 }
 .side-nav li {
-  margin: 1rem 0;
-  border-left: 0 solid #fff;
-  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
 }
-.side-nav--active,
-.side-nav li:hover {
-  border-left: 4px solid #fff !important;
+
+/* Active & hover green bar — left edge */
+.side-nav li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--green-light), var(--green-dark));
+  transform: scaleY(0);
+  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 0 2px 2px 0;
 }
-.side-nav--active a {
-  transform: translateX(-3px);
+.side-nav--active::before,
+.side-nav li:hover::before {
+  transform: scaleY(1);
 }
+
 .side-nav a:link,
 .side-nav a:visited {
-  padding: 1rem 4rem;
   display: flex;
   align-items: center;
-  color: #fff;
-  font-size: 1.5rem;
+  gap: 1.6rem;
+  padding: 1.5rem 3rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
-  transition: all 0.3s;
+  transition:
+    color 0.25s,
+    background 0.25s,
+    padding-left 0.25s;
 }
-.side-nav a:hover,
-.side-nav a:active {
-  transform: translateX(3px);
+.side-nav--active a,
+.side-nav li:hover a {
+  color: var(--white);
+  background: rgba(125, 213, 111, 0.06);
+  padding-left: 3.6rem;
 }
+.side-nav--active a {
+  color: var(--green-light);
+}
+
 .side-nav svg {
-  height: 1.9rem;
-  width: 1.9rem;
-  fill: var(--mist);
-  margin-right: 2rem;
+  height: 1.8rem;
+  width: 1.8rem;
+  fill: currentColor;
+  flex-shrink: 0;
+  transition: transform 0.25s;
 }
+.side-nav li:hover svg {
+  transform: scale(1.15);
+}
+
+/* ── Admin nav ───────────────────────────────────────────── */
 .admin-nav {
-  margin-top: 5.5rem;
+  margin-top: auto;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 .admin-nav__heading {
-  margin: 0 5rem 1.5rem 4rem;
-  padding-bottom: 3px;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #f2f2f2;
-  border-bottom: 1px solid currentColor;
+  color: var(--green-dark);
+  padding: 0 3rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.admin-nav__heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(125, 213, 111, 0.2);
+}
+
+/* ── Content area ────────────────────────────────────────── */
+.user-view__content {
+  padding: 6rem 7rem 8rem;
+  background: var(--white);
+  overflow-y: auto;
+}
+
+.user-view__form-container {
+  max-width: 68rem;
+}
+
+/* Form section title */
+.user-view__form-container .heading-secondary {
+  font-size: 2.4rem;
+  display: block;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--fog);
+  margin-bottom: 3.5rem !important;
+}
+
+/* form element spacing */
+.form {
+  width: 100%;
+}
+.form__group.right {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* ── Responsive: account page ────────────────────────────── */
+@media (max-width: 62.5em) {
+  .user-view {
+    grid-template-columns: 1fr;
+  }
+  .user-view__menu {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 2rem 1rem;
+    gap: 1rem;
+  }
+  .side-nav {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+  }
+  .side-nav a:link,
+  .side-nav a:visited {
+    padding: 1rem 1.8rem;
+    font-size: 1.2rem;
+  }
+  .admin-nav {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+    padding-left: 1rem;
+  }
+  .user-view__content {
+    padding: 4rem 3rem;
+  }
 }
 
 /* ────────────────────────────────────────────────────────────
