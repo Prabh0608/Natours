@@ -7,12 +7,22 @@ module.exports = class Email {
     ((this.to = user.email),
       (this.firstName = user.name.split(' ')[0]),
       (this.url = url),
-      (this.from = `Prabhjot Singh Saini ${process.env.EMAIL_FROM}`));
+      (this.from = `Prabhjot Singh Saini <${process.env.EMAIL_FROM}>`));
   }
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      return 1;
+      return nodemailer.createTransport({
+        host: process.env.BREVO_HOST,
+        port: process.env.BREVO_PORT,
+        auth: {
+          user: process.env.BREVO_LOGIN,
+          pass: process.env.BREVO_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
     }
     return nodemailer.createTransport({
       host: 'sandbox.smtp.mailtrap.io',
