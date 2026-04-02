@@ -142,7 +142,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 999;
-  background: rgba(13, 31, 26, 0.92);
+  background: #0d1f1aeb;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(125, 213, 111, 0.12);
