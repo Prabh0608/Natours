@@ -1,53 +1,49 @@
-const nodemailer = require('nodemailer');
+const axios = require('axios');
 const pug = require('pug');
 const { htmlToText } = require('html-to-text');
 
 module.exports = class Email {
   constructor(user, url) {
-    ((this.to = user.email),
-      (this.firstName = user.name.split(' ')[0]),
-      (this.url = url),
-      (this.from = `Prabhjot Singh Saini <${process.env.EMAIL_FROM}>`));
+    this.to = user.email;
+    this.firstName = user.name.split(' ')[0];
+    this.url = url;
+    this.fromEmail = process.env.EMAIL_FROM;
+    this.fromName = 'Prabhjot Singh Saini';
   }
 
-  newTransport() {
-    if (process.env.NODE_ENV === 'production') {
-      return nodemailer.createTransport({
-        host: process.env.BREVO_HOST,
-        port: process.env.BREVO_PORT,
-        auth: {
-          user: process.env.BREVO_LOGIN,
-          pass: process.env.BREVO_PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-    }
-    return nodemailer.createTransport({
-      host: 'sandbox.smtp.mailtrap.io',
-      port: 2525,
-      auth: {
-        user: 'd785e7d4cb628e',
-        pass: '3de8b8ecf78b39',
-      },
-    });
-  }
   async send(template, subject) {
+    // 1) Render HTML
     const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
       firstName: this.firstName,
       url: this.url,
       subject,
     });
-    const mailOptions = {
-      from: this.from,
-      to: this.to,
-      subject,
-      html,
-      text: htmlToText(html),
-    };
 
-    await this.newTransport().sendMail(mailOptions);
+    // 2) Send via Brevo REST API
+    await axios.post(
+      'https://api.brevo.com/v3/smtp/email',
+      {
+        sender: {
+          name: this.fromName,
+          email: this.fromEmail,
+        },
+        to: [
+          {
+            email: this.to,
+            name: this.firstName,
+          },
+        ],
+        subject: subject,
+        htmlContent: html,
+        textContent: htmlToText(html),
+      },
+      {
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
   }
 
   async sendWelcome() {
