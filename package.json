@@ -2,13 +2,12 @@
   "name": "natours",
   "version": "1.0.0",
   "description": "Learning node, express and mongoDB",
-  "main": "app.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
-    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
-    "build:js": "parcel watch ./public/js/index.js --dist-dir ./public/js/bundle.js"
+    "watch:js": "parcel watch ./public/js/index.js --dist-dir ./public/js",
+    "build:js": "parcel build ./public/js/index.js --dist-dir ./public/dist/js"
   },
   "author": "Prabhjot Singh Saini",
   "license": "ISC",
@@ -31,6 +30,7 @@
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
     "nodemailer": "^8.0.2",
+    "parcel": "^2.16.4",
     "pug": "^3.0.4",
     "sharp": "^0.34.5",
     "slugify": "^1.6.6",
@@ -39,6 +39,8 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^10.1.8",
@@ -46,7 +48,14 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
-    "parcel-bundler": "^1.12.5",
-    "prettier": "^3.7.4"
+    "events": "^3.3.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "prettier": "^3.7.4",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.4",
+    "vm-browserify": "^1.1.2"
   }
 }
