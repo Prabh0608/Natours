@@ -12897,7 +12897,7 @@ var login = exports.login = /*#__PURE__*/function () {
           _context.n = 1;
           return (0, _axios.default)({
             method: 'POST',
-            url: 'http://127.0.0.1:3000/api/v1/users/login',
+            url: '/api/v1/users/login',
             data: {
               email: email,
               password: password
@@ -12936,7 +12936,7 @@ var logout = exports.logout = /*#__PURE__*/function () {
           _context2.n = 1;
           return (0, _axios.default)({
             method: 'GET',
-            url: 'http://127.0.0.1:3000/api/v1/users/logout'
+            url: '/api/v1/users/logout'
           });
         case 1:
           res = _context2.v;
@@ -12980,7 +12980,7 @@ var signup = exports.signup = /*#__PURE__*/function () {
           _context.n = 1;
           return (0, _axios.default)({
             method: 'POST',
-            url: 'http://127.0.0.1:3000/api/v1/users/signup',
+            url: '/api/v1/users/signup',
             data: {
               name: name,
               email: email,
@@ -13033,7 +13033,7 @@ var updateSettings = exports.updateSettings = /*#__PURE__*/function () {
       while (1) switch (_context.p = _context.n) {
         case 0:
           _context.p = 0;
-          url = type === 'password' ? 'http://127.0.0.1:3000/api/v1/users/updatePassword' : 'http://127.0.0.1:3000/api/v1/users/updateMe';
+          url = type === 'password' ? '/api/v1/users/updatePassword' : '/api/v1/users/updateMe';
           _context.n = 1;
           return (0, _axios.default)({
             method: 'PATCH',
@@ -57698,7 +57698,7 @@ var setMaxIndex = function setMaxIndex(obj, maxIndex) {
 var hexTable = function () {
   var array = [];
   for (var i = 0; i < 256; ++i) {
-    array.push('%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase());
+    array[array.length] = '%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase();
   }
   return array;
 }();
@@ -57710,7 +57710,7 @@ var compactQueue = function compactQueue(queue) {
       var compacted = [];
       for (var j = 0; j < obj.length; ++j) {
         if (typeof obj[j] !== 'undefined') {
-          compacted.push(obj[j]);
+          compacted[compacted.length] = obj[j];
         }
       }
       item.obj[item.prop] = compacted;
@@ -57735,7 +57735,11 @@ var merge = function merge(target, source, options) {
   }
   if (typeof source !== 'object' && typeof source !== 'function') {
     if (isArray(target)) {
-      target.push(source);
+      var nextIndex = target.length;
+      if (options && typeof options.arrayLimit === 'number' && nextIndex > options.arrayLimit) {
+        return markOverflow(arrayToObject(target.concat(source), options), nextIndex);
+      }
+      target[nextIndex] = source;
     } else if (target && typeof target === 'object') {
       if (isOverflow(target)) {
         // Add at next numeric index for overflow objects
@@ -57766,7 +57770,11 @@ var merge = function merge(target, source, options) {
       }
       return markOverflow(result, getMaxIndex(source) + 1);
     }
-    return [target].concat(source);
+    var combined = [target].concat(source);
+    if (options && typeof options.arrayLimit === 'number' && combined.length > options.arrayLimit) {
+      return markOverflow(arrayToObject(combined, options), combined.length - 1);
+    }
+    return combined;
   }
   var mergeTarget = target;
   if (isArray(target) && !isArray(source)) {
@@ -57779,7 +57787,7 @@ var merge = function merge(target, source, options) {
         if (targetItem && typeof targetItem === 'object' && item && typeof item === 'object') {
           target[i] = merge(targetItem, item, options);
         } else {
-          target.push(item);
+          target[target.length] = item;
         }
       } else {
         target[i] = item;
@@ -57793,6 +57801,15 @@ var merge = function merge(target, source, options) {
       acc[key] = merge(acc[key], value, options);
     } else {
       acc[key] = value;
+    }
+    if (isOverflow(source) && !isOverflow(acc)) {
+      markOverflow(acc, getMaxIndex(source));
+    }
+    if (isOverflow(acc)) {
+      var keyNum = parseInt(key, 10);
+      if (String(keyNum) === key && keyNum >= 0 && keyNum > getMaxIndex(acc)) {
+        setMaxIndex(acc, keyNum);
+      }
     }
     return acc;
   }, mergeTarget);
@@ -57891,11 +57908,11 @@ var compact = function compact(value) {
       var key = keys[j];
       var val = obj[key];
       if (typeof val === 'object' && val !== null && refs.indexOf(val) === -1) {
-        queue.push({
+        queue[queue.length] = {
           obj: obj,
           prop: key
-        });
-        refs.push(val);
+        };
+        refs[refs.length] = val;
       }
     }
   }
@@ -57931,7 +57948,7 @@ var maybeMap = function maybeMap(val, fn) {
   if (isArray(val)) {
     var mapped = [];
     for (var i = 0; i < val.length; i += 1) {
-      mapped.push(fn(val[i]));
+      mapped[mapped.length] = fn(val[i]);
     }
     return mapped;
   }
@@ -57947,6 +57964,7 @@ module.exports = {
   isBuffer: isBuffer,
   isOverflow: isOverflow,
   isRegExp: isRegExp,
+  markOverflow: markOverflow,
   maybeMap: maybeMap,
   merge: merge
 };
@@ -58257,7 +58275,7 @@ var parseValues = function parseQueryStringValues(str, options) {
   };
   var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
   cleanStr = cleanStr.replace(/%5B/gi, '[').replace(/%5D/gi, ']');
-  var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
+  var limit = options.parameterLimit === Infinity ? void undefined : options.parameterLimit;
   var parts = cleanStr.split(options.delimiter, options.throwOnLimitExceeded ? limit + 1 : limit);
   if (options.throwOnLimitExceeded && parts.length > limit) {
     throw new RangeError('Parameter limit exceeded. Only ' + limit + ' parameter' + (limit === 1 ? '' : 's') + ' allowed.');
@@ -58304,6 +58322,12 @@ var parseValues = function parseQueryStringValues(str, options) {
     if (part.indexOf('[]=') > -1) {
       val = isArray(val) ? [val] : val;
     }
+    if (options.comma && isArray(val) && val.length > options.arrayLimit) {
+      if (options.throwOnLimitExceeded) {
+        throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+      }
+      val = utils.combine([], val, options.arrayLimit, options.plainObjects);
+    }
     if (key !== null) {
       var existing = has.call(obj, key);
       if (existing && options.duplicates === 'combine') {
@@ -58339,13 +58363,19 @@ var parseObject = function (chain, val, options, valuesParsed) {
       var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
       var decodedRoot = options.decodeDotInKeys ? cleanRoot.replace(/%2E/g, '.') : cleanRoot;
       var index = parseInt(decodedRoot, 10);
+      var isValidArrayIndex = !isNaN(index) && root !== decodedRoot && String(index) === decodedRoot && index >= 0 && options.parseArrays;
       if (!options.parseArrays && decodedRoot === '') {
         obj = {
           0: leaf
         };
-      } else if (!isNaN(index) && root !== decodedRoot && String(index) === decodedRoot && index >= 0 && options.parseArrays && index <= options.arrayLimit) {
+      } else if (isValidArrayIndex && index < options.arrayLimit) {
         obj = [];
         obj[index] = leaf;
+      } else if (isValidArrayIndex && options.throwOnLimitExceeded) {
+        throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+      } else if (isValidArrayIndex) {
+        obj[index] = leaf;
+        utils.markOverflow(obj, index);
       } else if (decodedRoot !== '__proto__') {
         obj[decodedRoot] = leaf;
       }
@@ -58375,7 +58405,7 @@ var splitKeyIntoSegments = function splitKeyIntoSegments(givenKey, options) {
         return;
       }
     }
-    keys.push(parent);
+    keys[keys.length] = parent;
   }
   var i = 0;
   while ((segment = child.exec(key)) !== null && i < options.depth) {
@@ -58386,13 +58416,13 @@ var splitKeyIntoSegments = function splitKeyIntoSegments(givenKey, options) {
         return;
       }
     }
-    keys.push(segment[1]);
+    keys[keys.length] = segment[1];
   }
   if (segment) {
     if (options.strictDepth === true) {
       throw new RangeError('Input depth exceeded depth option of ' + options.depth + ' and strictDepth is true');
     }
-    keys.push('[' + key.slice(segment.index) + ']');
+    keys[keys.length] = '[' + key.slice(segment.index) + ']';
   }
   return keys;
 };
@@ -76099,10 +76129,9 @@ var bookTour = exports.bookTour = /*#__PURE__*/function () {
         case 0:
           _context.p = 0;
           _context.n = 1;
-          return (0, _axios.default)("http://127.0.0.1:3000/api/v1/bookings/checkout-session/".concat(tourId));
+          return (0, _axios.default)("/api/v1/bookings/checkout-session/".concat(tourId));
         case 1:
           session = _context.v;
-          console.log(session);
           window.location.href = session.data.session.url;
           _context.n = 3;
           break;
@@ -76355,7 +76384,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57508" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55653" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
