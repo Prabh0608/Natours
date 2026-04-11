@@ -55,14 +55,16 @@ const createBookingCheckout = catchAsync(async (session) => {
     console.log('User not found');
     return;
   }
+  const user = userDoc.id;
   const stripeSession = await stripe.checkout.sessions.retrieve(session.id, {
     expand: ['line_items'],
   });
-  console.log('stripeSession: ', stripeSession);
+  console.log('stripeSession: ', stripeSession.line_items.data);
   const price = stripeSession.line_items.data[0].price_data.unit_amount / 100;
+  console.log('USSEERRRRRRRRRRRRRR: ', user);
   await Booking.create({
     tour,
-    user: userDoc.id,
+    user,
     price,
   });
 });
