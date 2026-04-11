@@ -46,7 +46,8 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 //   res.redirect(req.originalUrl.split('?')[0]);
 // });
 
-const createBookingCheckout = async (session) => {
+const createBookingCheckout = catchAsync(async (session) => {
+  console.log('Session:', session);
   const tour = session.client_reference_id;
   const userDoc = await User.findOne({
     email: session.customer_email,
@@ -64,7 +65,7 @@ const createBookingCheckout = async (session) => {
     user: userDoc.id,
     price,
   });
-};
+});
 
 exports.webhookCheckout = (req, res, next) => {
   const signature = req.headers['stripe-signature'];
